@@ -37,9 +37,19 @@ final class ResultAllTypeProvider implements MethodReturnTypeProviderInterface
             return null;
         }
 
-        $argType = $source->getNodeTypeProvider()->getType($callArgs[0]);
+        $argTypeUnion = $source->getNodeTypeProvider()->getType($callArgs[0]->value);
+
+        if ($argTypeUnion === null) {
+            return null;
+        }
+
+        $argType = $argTypeUnion->getSingleAtomic();
 
         if (! $argType instanceof Type\Atomic\TKeyedArray) {
+            return null;
+        }
+
+        if (! $argType->is_list) {
             return null;
         }
 
@@ -48,7 +58,7 @@ final class ResultAllTypeProvider implements MethodReturnTypeProviderInterface
             if (! $type instanceof Type\Atomic\TGenericObject) {
                 return null;
             }
-            if (! is_subclass_of($type->value, ResultInterface::class)) {
+            if (count($type->type_params) !== 2) {
                 return null;
             }
         }
@@ -59,8 +69,8 @@ final class ResultAllTypeProvider implements MethodReturnTypeProviderInterface
         return new Union([ new Type\Atomic\TGenericObject(
             ResultInterface::class,
             [
-                new Union([ new Type\Atomic\TKeyedArray($successTypes) ]),
-                new Union([ new Type\Atomic\TKeyedArray($errorTypes) ]),
+                new Union([ new Type\Atomic\TKeyedArray($successTypes, null, null, true) ]),
+                Type::getList(Type::combineUnionTypeArray(array_values($errorTypes), $source->getCodebase())),
             ]
         ) ]);
     }
@@ -72,12 +82,12 @@ final class ResultAllTypeProvider implements MethodReturnTypeProviderInterface
     private static function extractResultNestedTypes(int $templateIndex, array $arrayProps): array
     {
         return array_map(
-            function (Union $prop): Union {
+            function (Union $prop) use ($templateIndex): Union {
                 $type = $prop->getSingleAtomic();
                 assert($type instanceof Type\Atomic\TGenericObject);
-                assert(is_subclass_of($type->value, ResultInterface::class));
+                assert(count($type->type_params) === 2);
 
-                return $type->type_params[0];
+                return $type->type_params[$templateIndex];
             },
             $arrayProps,
         );
