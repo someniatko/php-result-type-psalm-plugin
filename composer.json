@@ -14,5 +14,10 @@
     },
     "require-dev": {
         "someniatko/result-type": "^1.4"
+    },
+    "extra": {
+        "psalm": {
+            "pluginClass": "Someniatko\\ResultTypePsalmPlugin\\Plugin"
+        }
     }
 }
