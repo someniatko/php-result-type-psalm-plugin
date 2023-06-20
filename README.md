@@ -1,8 +1,10 @@
 # Someniatko Result Type Psalm Plugin
 
-Provides more precise type support for `Result::all()`.
+Provides more precise type support for `Result::all()` of [`someniatko/result-type` lib][library].
 
 Supports Psalm 5 and PHP 7.4+.
+
+
 
 ## Installation
 
@@ -21,3 +23,7 @@ Then add to your `psalm.xml`:
     </plugins>
 </psalm>
 ```
+
+
+
+[library]: https://packagist.org/packages/someniatko/result-type
