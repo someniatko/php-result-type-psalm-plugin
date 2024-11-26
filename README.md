@@ -2,7 +2,7 @@
 
 Provides more precise type support for `Result::all()` of [`someniatko/result-type` lib][library].
 
-Supports Psalm 5 and PHP 7.4+.
+Supports Psalm 5 and PHP 8.2+.
 
 
 
